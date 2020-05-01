@@ -84,23 +84,33 @@ async function getCatalogAdvList(browser, src) {
     await page.waitForSelector(".snippet-list");
     
     const links = await page.evaluate(() => {
-        const items = document.querySelectorAll('.item');
+        const items = document.querySelectorAll('.snippet-list .item');
 
         const l = [];
         for (let i = 0; i < items.length; i++) {
             const link = items[i].querySelector('.snippet-link').toString();
+            const title = items[i].querySelector('.snippet-link').innerHTML;
             const price = items[i].querySelector('.snippet-price').innerHTML.replace(/\D/g, '');
             const date = items[i].querySelector('.snippet-date-info').getAttribute('data-tooltip');
-            const image = items[i].querySelector('.item-photo ');//.src;
 
-            // querySelectorAll array
-            // querySelector first item
-            
+            const imageSlider = document.querySelector(".item-slider");
+
+            if (!imageSlider) {
+                break;
+            }
+
+            const imageSrcItems = imageSlider.querySelectorAll('img');
+            const imageSrcList = [];
+            for (let j = 0; j < imageSrcItems.length; j++) {
+                imageSrcList.push(imageSrcItems[j].src);
+            }
+
             l.push({
+                title,
                 link,
                 price,
                 date,
-                image,
+                image: imageSrcList,
             });
         }
         return l;
